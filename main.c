@@ -4,12 +4,12 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <bool.h>
-#include <file.h>
+#include "bool.h"
+#include "file.h"
 
 int main(int argc, char *argv[])
 {
-      if(checkIsDirectory(argv[1]) && checkIsDirectory(argv[2])){
-          printf("SIEMA SIEMA");
+      if(checkIsDirectory(argv[1])==true && checkIsDirectory(argv[2])==true){
+          
       }
 }
