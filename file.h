@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <bool.h>
+#include "bool.h"
 
 bool checkIsDirectory(const char* path){
         struct stat status;
