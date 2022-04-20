@@ -11,51 +11,30 @@
 #include <unistd.h>
 #include <syslog.h>
 #include <string.h>
-#include "checkparametrs.h"
+#include <dirent.h>
+#include "sync.h"
 
-int main(int argc, char *argv[])
-{
-      pid_t pid, sid;
-      pid_t child_process;
 
-      char *parametr[] = {"firefox", NULL, NULL};
-      if(EnoughParametrs(argc)==true){
-      if(checkIsDirectory(argv[1])==true && checkIsDirectory(argv[2])==true){
-          pid = fork();
-          if (pid < 0) {
-                exit(EXIT_FAILURE);
+
+int main(int argc, char *argv[]){
+        if(argc<=2){
+                printf("Too few arguments sent to main\n");
+                exit(-1);  
         }
-        if (pid > 0) {
-                exit(EXIT_SUCCESS);
-        }
-        umask(0);
-        sid = setsid();
-        if (sid < 0) {
-                exit(EXIT_FAILURE);
-        }
-        if ((chdir("/")) < 0) {
-                exit(EXIT_FAILURE);
-        }
-        close(STDIN_FILENO);
-        close(STDOUT_FILENO);
-        close(STDERR_FILENO);
-        while (1) {
-		   child_process=fork();
-		   if(child_process!=0){
-			   sleep(300);
-		   }else{
-                     //TUTAJ BEDZIE ROBIONY DYM//
-			execvp("/usr/bin/firefox",parametr);
-			
-			fprintf (stderr,  "an error occurred in execvp\n"); 
-			abort();
-		   }
-        }
-      }else{
-            perror("PATH ERROR");
-      }
-      }else{
-            printf("Not enough parametrs, Exiting...\n");
-	      exit(1);
-      }
+        else{
+                char* dir1 = argv[1];
+                char* dir2 = argv[2];
+                char** files_dir1;
+                char** files_dir2;
+                if(checkIsDirectory(dir1) && checkIsDirectory(dir2)){
+                        files_dir1 = list_dir(dir1);
+                        files_dir2 = list_dir(dir2);
+
+                        printf("%d",compare_dirs(files_dir1,files_dir2));
+                }
+                else{
+                        printf("Podany plik nie jest katalogiem\n");
+                        exit(EXIT_FAILURE);
+                }
+        }  
 }
