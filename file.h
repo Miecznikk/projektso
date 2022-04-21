@@ -9,8 +9,13 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include "filetype.h"
+#include "filelist.h"
 
-char** list_dir(char* directory_name);
-bool checkIsDirectory(const char* path);
+bool checkIsDirectory(const char* path); // sprawdza czy plik jest katalogiem
+FILE_TYPE Get_File_Type(const char* name); // pobiera typ pliku
+file_list *show_dir_content(char * path); //czyta zawartosc katalogu i zapisuje na liste
+void printList(); // tymczasowe do sprawdzania listy czy tyrbi
+bool ExistsCheck(const char *path);
 
 

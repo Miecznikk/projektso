@@ -14,8 +14,6 @@
 #include <dirent.h>
 #include "sync.h"
 
-
-
 int main(int argc, char *argv[]){
         if(argc<=2){
                 printf("Too few arguments sent to main\n");
@@ -24,13 +22,8 @@ int main(int argc, char *argv[]){
         else{
                 char* dir1 = argv[1];
                 char* dir2 = argv[2];
-                char** files_dir1;
-                char** files_dir2;
                 if(checkIsDirectory(dir1) && checkIsDirectory(dir2)){
-                        files_dir1 = list_dir(dir1);
-                        files_dir2 = list_dir(dir2);
-
-                        printf("%d",compare_dirs(files_dir1,files_dir2));
+                        synchronise(dir1);
                 }
                 else{
                         printf("Podany plik nie jest katalogiem\n");
