@@ -2,4 +2,5 @@
 #include "bool.h"
 #include <stdlib.h>
 #include <stdio.h>
-void synchronise(char *path);
+#include "configure.h"
+void synchronise(configuration config);

@@ -1,16 +1,7 @@
 {
     "files.associations": {
-        "dirent.h": "c",
-        "types.h": "c",
-        "filetype.h": "c",
-        "stat.h": "c",
-        "stdio.h": "c",
-        "stdlib.h": "c",
-        "string.h": "c",
         "sync.h": "c",
-        "configuration.h": "c",
-        "file.h": "c",
-        "bool.h": "c",
-        "conf.h": "c"
+        "types.h": "c",
+        "syslog.h": "c"
     }
 }

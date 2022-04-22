@@ -17,5 +17,8 @@ FILE_TYPE Get_File_Type(const char* name); // pobiera typ pliku
 file_list *show_dir_content(char * path); //czyta zawartosc katalogu i zapisuje na liste
 void printList(); // tymczasowe do sprawdzania listy czy tyrbi
 bool ExistsCheck(const char *path);
-
+void copy_file(char *src_file,char* dst_file);
+bool Check_Time(char *src_file,char* dst_file);
+void Change_Time(char *src_file,char* dst_file);
+void Copy_Modify_Time(char *src_file,char* dst_file);
 

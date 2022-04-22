@@ -4,10 +4,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <utime.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h> 
-
+#include <assert.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 bool ExistsCheck(const char *path){ //sprawdza czy plik istnieje
   if( access( path, F_OK ) == 0 ) {
     return true;
@@ -99,7 +102,46 @@ file_list *show_dir_content(char * path)
 void printList(file_list *Lista) {
    while(Lista->next != NULL){
      Lista = Lista->next; //wypisuje zawartosc listy i to co zebral
-     printf("(%s,%d,%s,%s) ",Lista->name,Lista->type,Lista->path,Lista->time);
+     printf("(%s,%d,%s,%s",Lista->name,Lista->type,Lista->path,Lista->time);
    }
 	
+}
+void copy_file(char *src_file,char* dst_file){
+    int fp_dst;
+    int fp_src;
+    fp_dst=open(dst_file,O_RDWR|O_CREAT, 0666);
+    fp_src=open(src_file,O_RDONLY);
+    size_t bytes_read;
+    unsigned char znak[1];	
+    do{
+        bytes_read=read(fp_src,znak,1);
+        write(fp_dst, znak, 1);
+        }while(bytes_read == sizeof (znak));		
+      close(fp_src);
+      close(fp_dst);
+      return;
+
+}
+bool Check_Time(char *src_file,char* dst_file){
+  struct stat attr1,attr2;
+  if (stat(src_file, &attr1) != 0 || stat(dst_file, &attr2) != 0)
+    {
+        printf("file excetion");
+        exit(1);
+    }
+    if(difftime(attr1.st_mtime,attr2.st_mtime) >= 0 || difftime(attr2.st_mtime,attr1.st_mtime)){
+        //zrodlowy//                                   
+        return true;
+    }else{
+      return false;
+    } 
+}
+void Copy_Modify_Time(char *src_file,char* dst_file){
+    struct stat st;
+    struct utimbuf new_times;
+    stat(src_file, &st);
+    new_times.actime = st.st_atim.tv_sec;
+    new_times.modtime = st.st_mtim.tv_sec;
+    utime(dst_file, &new_times);
+    chmod(dst_file, st.st_mode);
 }
