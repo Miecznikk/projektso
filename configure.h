@@ -1,5 +1,6 @@
 #pragma once
 #include <stdlib.h>
+#include "bool.h"
 
 typedef struct configuration
 {

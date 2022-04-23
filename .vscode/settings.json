@@ -2,6 +2,10 @@
     "files.associations": {
         "sync.h": "c",
         "types.h": "c",
-        "syslog.h": "c"
+        "syslog.h": "c",
+        "unistd.h": "c",
+        "stdio.h": "c",
+        "file.h": "c",
+        "errno.h": "c"
     }
 }

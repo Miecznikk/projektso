@@ -15,8 +15,15 @@ bool ExistsCheck(const char *path){ //sprawdza czy plik istnieje
   if( access( path, F_OK ) == 0 ) {
     return true;
 } else {
-    return false;
+    return false;}
 }
+bool ExistsDirCheck(const char*path){
+  struct stat sb;
+  if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 bool checkIsDirectory(const char* path){
     DIR* directory = opendir(path);
@@ -65,7 +72,6 @@ file_list *insertList(file_list *Lista,char* namee,FILE_TYPE typee,char* pathh,c
     Lista->type = typee;
     return Lista;
 }
-
 file_list *show_dir_content(char * path)
 {
   // int path_lenght=strlen(path);//
@@ -77,24 +83,18 @@ file_list *show_dir_content(char * path)
   stat(path, &attr);
   while ((dir = readdir(directory)) != NULL) // if we were able to read somehting from the directory
     {
+      int path_lenght=strlen(path); //ilosc znakow w sciezce
+      path_lenght+=strlen(dir->d_name)+2;// dlugosc + nazwa pliku
+      char path_file[path_lenght]; // contener na to
+      snprintf(path_file, path_lenght, "%s/%s", path, dir->d_name); // laczy
+      //printf("%s\n",path_file); // testowo wypisuje sciezke
       if(dir-> d_type != DT_DIR){
-                        int path_lenght=strlen(path); //ilosc znakow w sciezce
-                        path_lenght+=strlen(dir->d_name)+2;// dlugosc + nazwa pliku
-                        char path_file[path_lenght]; // contener na to
-                        snprintf(path_file, path_lenght, "%s/%s", path, dir->d_name); // laczy
-                        printf("%s\n",path_file); // testowo wypisuje sciezke
-                        if(ExistsCheck(path_file)==false){printf("dzieki dziala");} //sprawdza czy exists do pliku dziala
-                        printf("%s,%s\n", dir->d_name,ctime(&attr.st_mtime)); // wypisuje resze parametrow
-                        insertList(Lista,dir->d_name,Get_File_Type(path_file),path,ctime(&attr.st_mtime)); //dodaje na lsite
-      }else{
-
-                if(dir -> d_type == DT_DIR && strcmp(dir->d_name,".")!=0 && strcmp(dir->d_name,"..")!=0 ) // if it is a directory
-                {
-                  //rekursywnie dodac
-      }else{
-
-        }
-      }      
+        insertList(Lista,dir->d_name,Get_File_Type(path_file),path,ctime(&attr.st_mtime)); //dodaje na lsite
+      }
+      if(dir -> d_type == DT_DIR && strcmp(dir->d_name,".")!=0 && strcmp(dir->d_name,"..")!=0  ) // if it is a directory
+      {
+      insertList(Lista,dir->d_name,Get_File_Type(path_file),path,ctime(&attr.st_mtime));}
+        
     }
     closedir(directory); // finally close the directory
     return Lista;
@@ -129,7 +129,7 @@ bool Check_Time(char *src_file,char* dst_file){
         printf("file excetion");
         exit(1);
     }
-    if(difftime(attr1.st_mtime,attr2.st_mtime) >= 0 || difftime(attr2.st_mtime,attr1.st_mtime)){
+    if(attr1.st_mtim.tv_sec==attr2.st_mtim.tv_sec){
         //zrodlowy//                                   
         return true;
     }else{
