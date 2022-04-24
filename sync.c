@@ -13,22 +13,18 @@
 #include <syslog.h>
 #include <string.h>
 #include <dirent.h>
-
-void synchronise(configuration config){
-    file_list *Lista=show_dir_content(config.src_path);
-    int path_src_lenght=strlen(config.src_path);
-    int path_dst_lenght=strlen(config.dst_path);
-    printList(Lista);
+void synchronise(file_list *Lista,configuration config){
+    Lista=Recursive_Content(Lista,config.src_path);
     //kopiuje pliki ze zrodlowego do docelowego jesli ich nie ma,a jesli istnieja i ich data modyfikacji jest rozna to ustawiana jest na ta ze zrodlowego//
     while(Lista->next!=NULL){
         Lista=Lista->next;
-        int name_file_lenght=strlen(Lista->name);
-        int tmp=path_src_lenght+name_file_lenght+2;
-        int tmp2=path_dst_lenght+name_file_lenght+2;
-        char file_src_path[path_src_lenght+name_file_lenght];
-        char file_dst_path[path_dst_lenght+name_file_lenght];
-        snprintf(file_src_path, tmp, "%s/%s", config.src_path, Lista->name);
-        snprintf(file_dst_path, tmp2, "%s/%s", config.dst_path, Lista->name);
+        int lenght = strlen(Lista->path) + strlen(Lista->name) - strlen(config.src_path) + strlen(config.dst_path) + 2;
+        char file_dst_path[lenght];
+        snprintf(file_dst_path, lenght, "%s%s/%s", config.dst_path, Lista->path + strlen(config.src_path), Lista->name);
+        lenght = strlen(Lista->path);
+        lenght += strlen(Lista->name) + 2;
+        char file_src_path[lenght];
+        snprintf(file_src_path, lenght, "%s/%s", Lista->path, Lista->name);
         if(Lista->type==REGULAR_FILE){
             if(ExistsCheck(file_dst_path)==false){
                 copy_file(file_src_path,file_dst_path);
@@ -41,7 +37,8 @@ void synchronise(configuration config){
                 }
             }
         }
-        if(Lista->type==DIRECTORY){
+
+        if(Lista->type==DIRECTORY && config.Recursive==true){
             if(ExistsDirCheck(file_dst_path)==false){
                 mkdir(file_dst_path,0755);
                 Copy_Modify_Time(file_src_path,file_dst_path);
@@ -50,28 +47,29 @@ void synchronise(configuration config){
         }
     }
     ///Usuwa pliki ktore sa w docelowym a nie ma ich w zrodlowym///
-    file_list *Lista_DST=show_dir_content(config.dst_path);
+    file_list *Lista_DST=Create_List();
+    Lista_DST=Recursive_Content(Lista_DST,config.dst_path);
     while (Lista_DST->next!=NULL)
     {
-        Lista_DST=Lista_DST->next;
-        int name_file_lenght=strlen(Lista_DST->name);
-        int tmp=path_src_lenght+name_file_lenght+2;
-        int tmp2=path_dst_lenght+name_file_lenght+2;
-        char file_src_path[path_src_lenght+name_file_lenght];
-        char file_dst_path[path_dst_lenght+name_file_lenght];
-        snprintf(file_src_path, tmp, "%s/%s", config.src_path, Lista_DST->name);
-        snprintf(file_dst_path, tmp2, "%s/%s", config.dst_path, Lista_DST->name);
-       if(Lista_DST->type==DIRECTORY){
-            if(ExistsDirCheck(file_src_path)==false){
-                remove(file_dst_path);
-            }
-    
-        }
-        if(Lista_DST->type==REGULAR_FILE){
-            if(ExistsCheck(file_src_path)==false){
-               remove(file_dst_path);
-            }
-    
+     Lista_DST=Lista_DST->next;
+     int lenght = strlen(Lista_DST->path) + strlen(Lista_DST->name) - strlen(config.src_path) + strlen(config.dst_path) + 2;
+    char file_dst_path[lenght];
+    snprintf(file_dst_path, lenght, "%s%s/%s", config.src_path, Lista_DST->path + strlen(config.dst_path), Lista_DST->name);
+    lenght = strlen(Lista->path);
+    lenght += strlen(Lista->name) + 2;
+    char file_src_path[lenght];
+    snprintf(file_src_path, lenght, "%s/%s", Lista_DST->path, Lista_DST->name);   
+    if(Lista_DST->type==DIRECTORY && config.Recursive==true){
+            if(ExistsDirCheck(file_dst_path)==false){
+            remove(file_src_path);
         }
     }
+    if(Lista_DST->type=REGULAR_FILE){
+        if(ExistsCheck(file_dst_path)==false){
+            remove(file_src_path);
+        }
+    }
+    }
+    free(Lista);
+    free(Lista_DST);
 }

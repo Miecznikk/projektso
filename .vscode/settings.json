@@ -6,6 +6,9 @@
         "unistd.h": "c",
         "stdio.h": "c",
         "file.h": "c",
-        "errno.h": "c"
+        "errno.h": "c",
+        "stat.h": "c",
+        "string.h": "c",
+        "dirent.h": "c"
     }
 }

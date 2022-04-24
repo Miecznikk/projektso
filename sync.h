@@ -3,4 +3,5 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "configure.h"
-void synchronise(configuration config);
+#include "file.h"
+void synchronise(file_list *Lista,configuration config);

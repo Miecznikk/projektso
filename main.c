@@ -24,8 +24,9 @@ int main(int argc, char *argv[]){
                 char* dir1 = argv[1];
                 char* dir2 = argv[2];
                 if(checkIsDirectory(dir1) && checkIsDirectory(dir2)){
-                        configuration config=set_config(dir1,dir2);
-                        synchronise(config);
+                        configuration config=set_config(dir1,dir2,true); // albo false flaga ro R
+                        file_list *List=Create_List();
+                        synchronise(List,config);
                 }
                 else{
                         printf("Podany plik nie jest katalogiem\n");

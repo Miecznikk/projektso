@@ -65,38 +65,12 @@ file_list *insertList(file_list *Lista,char* namee,FILE_TYPE typee,char* pathh,c
     Lista->name = malloc(strlen(namee));
     Lista->name = namee;
     Lista->path = malloc(strlen(pathh));
-    Lista->path=pathh;
+    strcpy(Lista->path,pathh);
+    // Lista->path=pathh;
     Lista->time=malloc(strlen(timee));
     Lista->time=timee;
     Lista->next = NULL;
     Lista->type = typee;
-    return Lista;
-}
-file_list *show_dir_content(char * path)
-{
-  // int path_lenght=strlen(path);//
-  file_list *Lista=Create_List();
-  DIR * directory = opendir(path); // open the path
-  if(directory==NULL) return NULL; // if was not able, return
-  struct dirent * dir; // for the directory entries
-  struct stat attr;
-  stat(path, &attr);
-  while ((dir = readdir(directory)) != NULL) // if we were able to read somehting from the directory
-    {
-      int path_lenght=strlen(path); //ilosc znakow w sciezce
-      path_lenght+=strlen(dir->d_name)+2;// dlugosc + nazwa pliku
-      char path_file[path_lenght]; // contener na to
-      snprintf(path_file, path_lenght, "%s/%s", path, dir->d_name); // laczy
-      //printf("%s\n",path_file); // testowo wypisuje sciezke
-      if(dir-> d_type != DT_DIR){
-        insertList(Lista,dir->d_name,Get_File_Type(path_file),path,ctime(&attr.st_mtime)); //dodaje na lsite
-      }
-      if(dir -> d_type == DT_DIR && strcmp(dir->d_name,".")!=0 && strcmp(dir->d_name,"..")!=0  ) // if it is a directory
-      {
-      insertList(Lista,dir->d_name,Get_File_Type(path_file),path,ctime(&attr.st_mtime));}
-        
-    }
-    closedir(directory); // finally close the directory
     return Lista;
 }
 void printList(file_list *Lista) {
@@ -104,7 +78,6 @@ void printList(file_list *Lista) {
      Lista = Lista->next; //wypisuje zawartosc listy i to co zebral
      printf("(%s,%d,%s,%s",Lista->name,Lista->type,Lista->path,Lista->time);
    }
-	
 }
 void copy_file(char *src_file,char* dst_file){
     int fp_dst;
@@ -144,4 +117,35 @@ void Copy_Modify_Time(char *src_file,char* dst_file){
     new_times.modtime = st.st_mtim.tv_sec;
     utime(dst_file, &new_times);
     chmod(dst_file, st.st_mode);
+}
+
+
+
+
+
+file_list *Recursive_Content(file_list *Lista,char * path)
+{
+  DIR * directory = opendir(path); // open the path
+  if(directory==NULL) return NULL; // if was not able, return
+  struct dirent * dir; // for the directory entries
+  struct stat attr;
+  stat(path, &attr);
+  while ((dir = readdir(directory)) != NULL) // if we were able to read somehting from the directory
+    {
+      int path_lenght=strlen(path); //ilosc znakow w sciezce
+      path_lenght+=strlen(dir->d_name)+2;// dlugosc + nazwa pliku
+      char path_file[path_lenght]; // contener na to
+      snprintf(path_file, path_lenght, "%s/%s", path, dir->d_name); // laczy
+      if(dir-> d_type != DT_DIR){
+        insertList(Lista,dir->d_name,Get_File_Type(path_file),path,ctime(&attr.st_mtime)); //dodaje na lsite
+      }
+      if(dir -> d_type == DT_DIR && strcmp(dir->d_name,".")!=0 && strcmp(dir->d_name,"..")!=0  ) // if it is a directory
+      {
+      insertList(Lista,dir->d_name,Get_File_Type(path_file),path,ctime(&attr.st_mtime));
+      Recursive_Content(Lista,path_file);
+      }
+        
+    }
+    closedir(directory); // finally close the directory
+    return Lista;
 }

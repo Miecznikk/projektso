@@ -21,4 +21,6 @@ void copy_file(char *src_file,char* dst_file);
 bool Check_Time(char *src_file,char* dst_file);
 void Copy_Modify_Time(char *src_file,char* dst_file);
 bool ExistsDirCheck(const char*path);
+file_list *Create_List();
+file_list *Recursive_Content(file_list *Lista,char * path);
 
