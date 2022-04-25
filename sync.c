@@ -25,9 +25,17 @@ void synchronise(file_list *Lista,configuration config){
         lenght += strlen(Lista->name) + 2;
         char file_src_path[lenght];
         snprintf(file_src_path, lenght, "%s/%s", Lista->path, Lista->name);
+        struct stat st;
+        stat(file_src_path, &st);
+        int size = st.st_size;
         if(Lista->type==REGULAR_FILE){
             if(ExistsCheck(file_dst_path)==false){
-                copy_file(file_src_path,file_dst_path);
+                if(size%1048576 >10){
+                copy_file_mmap(file_src_path,file_dst_path);
+                }else{
+                    copy_file(file_src_path,file_dst_path);
+                }
+                
                 Copy_Modify_Time(file_src_path,file_dst_path);
             }else{
                 if(Check_Time(file_src_path,file_dst_path)==false){

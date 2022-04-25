@@ -23,4 +23,5 @@ void Copy_Modify_Time(char *src_file,char* dst_file);
 bool ExistsDirCheck(const char*path);
 file_list *Create_List();
 file_list *Recursive_Content(file_list *Lista,char * path);
+void copy_file_mmap(char *src_path, char *dst_path);
 

@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <sys/mman.h> 
 bool ExistsCheck(const char *path){ //sprawdza czy plik istnieje
   if( access( path, F_OK ) == 0 ) {
     return true;
@@ -148,4 +149,29 @@ file_list *Recursive_Content(file_list *Lista,char * path)
     }
     closedir(directory); // finally close the directory
     return Lista;
+}
+void copy_file_mmap(char *src_path, char *dst_path){
+    /* Deklaracje zmiennych */
+    int sfd, dfd;
+    char *src, *dest;
+    struct stat s;
+    size_t filesize;
+
+    /* Plik źródłowy */
+    sfd = open(src_path, O_RDONLY);
+    filesize = lseek(sfd, 0, SEEK_END);
+    src = mmap(NULL, filesize, PROT_READ, MAP_PRIVATE, sfd, 0);
+
+    /* Plik docelowy */
+    dfd = open(dst_path, O_RDWR | O_CREAT, 0666);
+    ftruncate(dfd, filesize);
+    dest = mmap(NULL, filesize, PROT_READ | PROT_WRITE, MAP_SHARED, dfd, 0);
+
+    /* Kopiowanie */
+    memcpy(dest, src, filesize);
+    munmap(src, filesize);
+    munmap(dest, filesize);
+
+    close(sfd);
+    close(dfd);
 }
