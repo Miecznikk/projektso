@@ -34,11 +34,12 @@ static int create_pid_file(const char *pid_file)
     return true;
 }
 void handler(int signum){
-	openlog("File synchronization Daemon", LOG_PID, LOG_USER);
+	syslog(LOG_INFO, "Wymuszenie w trakcie synchronizacji");
 	syslog(LOG_NOTICE,"Ctrl+'/' used");
 	closelog();
 }
 void Fork_Process(){
+        syslog(LOG_INFO, "Rozpoczecie forkowania");
         pid_t pid, sid;
         pid = fork();
         if (pid < 0) {
@@ -58,6 +59,7 @@ void Fork_Process(){
         close(STDIN_FILENO);
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
+        syslog(LOG_INFO, "Zakonczenie forkowania");
 }
 int main(int argc, char *argv[]){
         int opt;
@@ -102,18 +104,22 @@ int main(int argc, char *argv[]){
                 configuration config=set_config(dir1,dir2,RecursiveFlag); // albo false flaga ro R        
                 if(signal(SIGUSR1, handler)==SIG_ERR)
     	        exit(EXIT_FAILURE);
+                openlog ("Start Logging", LOG_PID | LOG_CONS, LOG_LOCAL0);
+                syslog(LOG_INFO, "Rozpoczecie dzialania programu");
                 Fork_Process();
                 create_pid_file(full_cwd);
                 while(1){
                 file_list *List=Create_List();
+                syslog(LOG_INFO, "Rozpoczecie synchronizacji");
                 synchronise(List,config);
+                syslog(LOG_INFO, "Usypia sie na %d",time);
                 sleep(time);
+                syslog(LOG_INFO, "Synchronizacja zakonczona");
                 }
                 }else{
                         printf("Podany plik nie jest katalogiem\n");
                         exit(EXIT_FAILURE);
                 }
         }  
-        printf("\nTerminated\n");
         return 0;
 }
