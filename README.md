@@ -6,3 +6,6 @@ Demon synchronizujący dwa katalogi
 
 Program domyślnie uzywa read/write do plikow ważacych mniej niz 10MB, dla plikow ktore waza wiecej uzywa mmapa.
 Program przechowuje logi w /var/log/local0, aby odseparować logi z programu od innych.
+
+Aby wymusic synchronizacje nalezy uzyc skryptu ./synchdemon.sh
+Aby zabic demona nalezy uzyc skryptu ./killdemon.sh
