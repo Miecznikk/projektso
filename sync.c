@@ -14,7 +14,6 @@
 #include <string.h>
 #include <dirent.h>
 void synchronise(file_list *Lista,configuration config){
-    syslog(LOG_INFO, "Sprawdzanie plikow");
     Lista=Recursive_Content(Lista,config.src_path);
     //kopiuje pliki ze zrodlowego do docelowego jesli ich nie ma,a jesli istnieja i ich data modyfikacji jest rozna to ustawiana jest na ta ze zrodlowego//
     while(Lista->next!=NULL){
@@ -36,13 +35,9 @@ void synchronise(file_list *Lista,configuration config){
                 }else{
                     copy_file(file_src_path,file_dst_path);
                 }
-
-                syslog(LOG_INFO, "Kopiowanie pliku z %s do %s ",file_src_path,file_dst_path);
                 Copy_Modify_Time(file_src_path,file_dst_path);
             }else{
                 if(Check_Time(file_src_path,file_dst_path)==false){
-
-                    syslog(LOG_INFO, "Aktualizacja pliku z %s do %s ",file_src_path,file_dst_path);
                     remove(file_dst_path);
                     copy_file(file_src_path,file_dst_path);
                     Copy_Modify_Time(file_src_path,file_dst_path);
@@ -53,7 +48,7 @@ void synchronise(file_list *Lista,configuration config){
         if(Lista->type==DIRECTORY && config.Recursive==true){
             if(ExistsDirCheck(file_dst_path)==false){
                 mkdir(file_dst_path,0755);
-                syslog(LOG_INFO, "Tworzenie katalogu %s",file_dst_path);
+                Copy_Modify_Time(file_src_path,file_dst_path);
             }
     
         }
@@ -74,17 +69,14 @@ void synchronise(file_list *Lista,configuration config){
     if(Lista_DST->type==DIRECTORY && config.Recursive==true){
             if(ExistsDirCheck(file_dst_path)==false){
             remove(file_src_path);
-            syslog(LOG_INFO, "Usuwanie folderu %s",file_src_path);
         }
     }
     if(Lista_DST->type=REGULAR_FILE){
         if(ExistsCheck(file_dst_path)==false){
             remove(file_src_path);
-            syslog(LOG_INFO, "Usuwanie %s",file_src_path);
         }
     }
     }
     free(Lista);
     free(Lista_DST);
-    syslog(LOG_INFO, "Koniec sprawdzania plikow");
 }

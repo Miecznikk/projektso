@@ -1,7 +1,3 @@
 #!/bin/bash
-filename='demon_pid.txt'
-n=1
-while read line; do
-echo "Line No. $n : $line"
+line=$(head -n 1 "demon_pid.txt")
 sudo kill -9 $line
-done < $filename

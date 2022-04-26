@@ -18,7 +18,7 @@
 static int create_pid_file(const char *pid_file)
 {
     pid_t my_pid = getpid();
-    char my_pid_str[10];
+    char my_pid_str[20];
     int fd;
 
     sprintf(my_pid_str, "%d", my_pid);
@@ -80,10 +80,8 @@ int main(int argc, char *argv[]){
                 exit(-1);  
         }
         else{
-                while((opt = getopt(argc, argv, ":knrs:d:t:v")) != -1) {
+                while((opt = getopt(argc, argv, "knrs:d:t:v")) != -1) {
                         switch(opt){
-                        case 'n':
-                        ///pomoc//
                         case 'r':
                         RecursiveFlag=true;
                                 break;
