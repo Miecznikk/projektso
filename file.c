@@ -64,10 +64,9 @@ file_list *insertList(file_list *Lista,char* namee,FILE_TYPE typee,char* pathh,c
     Lista->next = malloc(sizeof(file_list));
 	  Lista = Lista->next;
     Lista->name = malloc(strlen(namee));
-    Lista->name = namee;
+    strcpy(Lista->name,namee);
     Lista->path = malloc(strlen(pathh));
     strcpy(Lista->path,pathh);
-    // Lista->path=pathh;
     Lista->time=malloc(strlen(timee));
     Lista->time=timee;
     Lista->next = NULL;
@@ -151,27 +150,28 @@ file_list *Recursive_Content(file_list *Lista,char * path)
     return Lista;
 }
 void copy_file_mmap(char *src_path, char *dst_path){
-    /* Deklaracje zmiennych */
     int sfd, dfd;
     char *src, *dest;
     struct stat s;
     size_t filesize;
-
-    /* Plik źródłowy */
     sfd = open(src_path, O_RDONLY);
     filesize = lseek(sfd, 0, SEEK_END);
     src = mmap(NULL, filesize, PROT_READ, MAP_PRIVATE, sfd, 0);
-
-    /* Plik docelowy */
     dfd = open(dst_path, O_RDWR | O_CREAT, 0666);
     ftruncate(dfd, filesize);
     dest = mmap(NULL, filesize, PROT_READ | PROT_WRITE, MAP_SHARED, dfd, 0);
-
-    /* Kopiowanie */
     memcpy(dest, src, filesize);
     munmap(src, filesize);
     munmap(dest, filesize);
-
     close(sfd);
     close(dfd);
+}
+void Clear_List(file_list **first){
+    file_list *prev=*first;
+    while(*first){
+        *first=(*first)->next;
+        printf("free\n");
+        free(prev);
+        prev=*first;
+    }
 }

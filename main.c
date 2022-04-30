@@ -18,7 +18,7 @@
 static int create_pid_file(const char *pid_file)
 {
     pid_t my_pid = getpid();
-    char my_pid_str[20];
+    char my_pid_str[10];
     int fd;
 
     sprintf(my_pid_str, "%d", my_pid);
@@ -30,13 +30,11 @@ static int create_pid_file(const char *pid_file)
         return false;
 
     close(fd);
-
+        syslog(LOG_INFO, "Stworzono plik z PID demona ");
     return true;
 }
 void handler(int signum){
-	syslog(LOG_INFO, "Wymuszenie w trakcie synchronizacji");
-	syslog(LOG_NOTICE,"Ctrl+'/' used");
-	closelog();
+        syslog(LOG_INFO, "Wymuszenie synchronizacji po przez sygnal SIGUSR");
 }
 void Fork_Process(){
         syslog(LOG_INFO, "Rozpoczecie forkowania");
@@ -62,6 +60,8 @@ void Fork_Process(){
         syslog(LOG_INFO, "Zakonczenie forkowania");
 }
 int main(int argc, char *argv[]){
+        openlog ("Rozpoczecie Logowania", LOG_PID | LOG_CONS, LOG_LOCAL0);
+        syslog(LOG_INFO, "Rozpoczecie dzialania programu");
         int opt;
         char* dir1;
         char* dir2;
@@ -75,46 +75,53 @@ int main(int argc, char *argv[]){
                 char full_cwd[lenght];
                 snprintf(full_cwd,lenght,"%s/%s",cwd,demon);
 
-        if(argc<=0){
+        if(argc<=4){
                 printf("Too few arguments sent to main\n");
+                syslog(LOG_INFO, "Error za mala ilosc argumentow / ZLA SKLADNIA WYWOŁANIA");
                 exit(-1);  
         }
         else{
-                while((opt = getopt(argc, argv, "knrs:d:t:v")) != -1) {
+                while((opt = getopt(argc, argv, "rs:d:t")) != -1) {
                         switch(opt){
                         case 'r':
                         RecursiveFlag=true;
+                        syslog(LOG_INFO, "Ustawiony tryb -R");
                                 break;
                         case 's':
-                        printf("filename %s\n", optarg); 
                         dir1 = optarg;
+                        syslog(LOG_INFO, "Sciezka zrodlowa ustawiona na %s",dir1);
                                 break;
                         case 'd':
-                        printf("filename %s\n", optarg); 
                         dir2 = optarg;
+                        syslog(LOG_INFO, "Sciezka dolecowa ustawiona na %s",dir2);
                                 break;
                         case 't':
                         time=atoi(optarg);
+                        syslog(LOG_INFO, "Interwal synchronizacji ustawiony na %d",time);
                                 break;
+                        case '?': 
+                                printf("unknown option: %c\n", optopt);
+                                break; 
                         }
                 }
-                if(checkIsDirectory(dir1) && checkIsDirectory(dir2)){ 
-                configuration config=set_config(dir1,dir2,RecursiveFlag); // albo false flaga ro R        
-                if(signal(SIGUSR1, handler)==SIG_ERR)
+                if(checkIsDirectory(dir1) && checkIsDirectory(dir2)){
+                configuration config=set_config(dir1,dir2,RecursiveFlag); // albo false flaga ro R      
+                syslog(LOG_INFO, "Sciezki podane prawidlowo");
+                if(signal(SIGUSR1, handler)==SIG_ERR){
     	        exit(EXIT_FAILURE);
-                openlog ("Start Logging", LOG_PID | LOG_CONS, LOG_LOCAL0);
-                syslog(LOG_INFO, "Rozpoczecie dzialania programu");
+                }
                 Fork_Process();
                 create_pid_file(full_cwd);
                 while(1){
-                file_list *List=Create_List();
-                syslog(LOG_INFO, "Rozpoczecie synchronizacji");
-                synchronise(List,config);
-                syslog(LOG_INFO, "Usypia sie na %d",time);
+                syslog(LOG_INFO, "Rozpoczecie Synchronizacji");
+                synchronise_remove(config);
+                synchronise(config);
+                syslog(LOG_INFO, "Zakonczenie synchronizacji");
+                syslog(LOG_INFO, "Uspienie pracy na %d s",time);
                 sleep(time);
-                syslog(LOG_INFO, "Synchronizacja zakonczona");
                 }
                 }else{
+                        syslog(LOG_INFO, "Sciezka %s lub %s nie jest katalogiem",dir1,dir2);
                         printf("Podany plik nie jest katalogiem\n");
                         exit(EXIT_FAILURE);
                 }

@@ -24,4 +24,5 @@ bool ExistsDirCheck(const char*path);
 file_list *Create_List();
 file_list *Recursive_Content(file_list *Lista,char * path);
 void copy_file_mmap(char *src_path, char *dst_path);
+void Clear_List(file_list **first);
 
