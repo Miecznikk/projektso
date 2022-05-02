@@ -34,7 +34,7 @@
 * ```./time_test.sh - Pokazuje roznice czasu miedzy kopiowaniem read/write i mmap // program znajduje sie w folderze Test_speed```
 
 ## INFO
-Program domyślnie uzywa read/write do plikow ważacych mniej niz 10MB, dla plikow ktore waza wiecej uzywa mmapa.
+Program domyślnie uzywa read/write do plikow ważacych mniej niz 10MB, dla plikow ktore waza wiecej uzywa mmapa. Domyślny czas ustawiony jest na 10s.
 Program przechowuje logi w /var/log/local0, aby odseparować logi z programu od innych.
 ## AUTORZY
 Projekt wykonali Filip Rybiński i Dominik Gudalewski
