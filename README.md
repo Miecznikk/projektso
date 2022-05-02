@@ -8,6 +8,8 @@
  (3) ``` Ustawienie interwału synchronizacji= ./program -s [Sciezka] -d [Sciezka] -t [CZAS]```
  
  (4) ``` Ustawienie progu wagi plikow= ./program -s [Sciezka] -d [Sciezka] -w [LICZBA W MB]```
+ 
+ (5) ``` Cała składnia= ./program -r -s [Sciezka] -d [Sciezka] -t [CZAS] -w [LICZBA W MB]```
 
 ### Opis opcji:
 
