@@ -40,8 +40,8 @@ Aby zabic demona nalezy uzyc skryptu ./killdemon.sh
 ### Proste uzycie:
 * ```./test.sh - towrzy katalogu w katalogu glownym wraz z plikami i uruchamia demona```
 * ```./killdemon.sh - zabija demona```
-* * ```./synchdemon.sh - wymusza synchronizacje```
-* * * ```./time_test.sh - Pokazuje roznice czasu miedzy kopiowaniem read/write i mmap // program znajduje sie w folderze Test_speed```
+* ```./synchdemon.sh - wymusza synchronizacje```
+* ```./time_test.sh - Pokazuje roznice czasu miedzy kopiowaniem read/write i mmap // program znajduje sie w folderze Test_speed```
 
 ## INFO
 Program domyślnie uzywa read/write do plikow ważacych mniej niz 10MB, dla plikow ktore waza wiecej uzywa mmapa.
