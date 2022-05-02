@@ -66,7 +66,9 @@ int main(int argc, char *argv[]){
         char* dir1;
         char* dir2;
         bool RecursiveFlag=false;
+        int tmp;
         int time=10;
+        int size=10485760;
         char *demon="demon_pid.txt";
         char cwd[PATH_MAX];
         if (getcwd(cwd, sizeof(cwd)) != NULL){}
@@ -81,7 +83,7 @@ int main(int argc, char *argv[]){
                 exit(-1);  
         }
         else{
-                while((opt = getopt(argc, argv, "rs:d:t")) != -1) {
+                while((opt = getopt(argc, argv, "rs:d:t:w:x")) != -1) {
                         switch(opt){
                         case 'r':
                         RecursiveFlag=true;
@@ -96,8 +98,13 @@ int main(int argc, char *argv[]){
                         syslog(LOG_INFO, "Sciezka dolecowa ustawiona na %s",dir2);
                                 break;
                         case 't':
-                        time=atoi(optarg);
+                                time=atoi(optarg);
                         syslog(LOG_INFO, "Interwal synchronizacji ustawiony na %d",time);
+                                break;
+                        case 'w':
+                                tmp=atoi(optarg);
+                                size=1024*1024*tmp;
+                        syslog(LOG_INFO, "Rozmiar pliku duzego ustawiony na  %d MB",(size/(1024*1024)));
                                 break;
                         case '?': 
                                 printf("unknown option: %c\n", optopt);
@@ -105,7 +112,7 @@ int main(int argc, char *argv[]){
                         }
                 }
                 if(checkIsDirectory(dir1) && checkIsDirectory(dir2)){
-                configuration config=set_config(dir1,dir2,RecursiveFlag); // albo false flaga ro R      
+                configuration config=set_config(dir1,dir2,RecursiveFlag,size); // albo false flaga ro R    
                 syslog(LOG_INFO, "Sciezki podane prawidlowo");
                 if(signal(SIGUSR1, handler)==SIG_ERR){
     	        exit(EXIT_FAILURE);

@@ -32,7 +32,7 @@ void synchronise(configuration config){
         int size = st.st_size;
         if(Lista->type==REGULAR_FILE){
             if(ExistsCheck(file_dst_path)==false){
-                    if(size/1048576 >10){
+                    if(size>config.size){
                         syslog(LOG_INFO, "Kopiowanie pliku przy pomocy mmap waga >10MB. Plik skopiowany z %s do %s",file_src_path,file_dst_path);
                         copy_file_mmap(file_src_path,file_dst_path);
                         }else{
