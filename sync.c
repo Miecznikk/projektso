@@ -45,7 +45,7 @@ void synchronise(configuration config){
                  if(Check_Time(file_src_path,file_dst_path)==false){
                      syslog(LOG_INFO, "Kopiowanie pliku z powodu roznego czasu edycji. Plik zmodyfikowany %s",file_dst_path);
                      remove(file_dst_path);
-                     if(size/1048576 >10){
+                     if(size>config.size){
                         copy_file_mmap(file_src_path,file_dst_path);
                      }
                      else{
